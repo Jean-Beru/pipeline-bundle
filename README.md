@@ -6,7 +6,21 @@
 
 ## Install
 
-`composer require jean-beru/pipeline-bundle`
+Install bundle :
+```shell
+composer require jean-beru/pipeline-bundle
+`````
+
+If you do not use [symfony/flex](https://github.com/symfony/flex), you have to add this bundle to your
+`config/bundles.php` file :
+```php
+<?php
+
+return [
+    ...
+    JeanBeru\PipelineBundle\PipelineBundle::class => ['all' => true],
+];
+```
 
 ## Configuration
 
@@ -29,29 +43,6 @@ pipeline:
         - 'App\Stages\AddThree'
         - 'App\Stages\MultiplyByFour'
 ```
-
-## What are pipeline and stage ?
-
-A stage represents a task to execute with a payload. It must be a callable. You can implement 
-`League\Pipeline\StageInterface` to ensure that your stage can be called.
-
-A pipeline represents chained stages. You can see it like a CLI command: `stage_1 | stage_2 | stage_3`. Each stage 
-receives the previously returned payload.
-Since pipelines implements `League\Pipeline\PipelineInterface` which implements itself `League\Pipeline\StageInterface`,
-you can use it as a stage to make re-usable pipelines (a.k.a. pipeline-ception). Ex: `stage_1 | pipeline_1  | stage_3`.
-
-## What is a processor ?
-
-To execute a pipeline, a processor is used. It must implement `League\Pipeline\ProcessorInterface`. You can use your 
-own service if you want to.
-
-If `symfony/event-dispatcher` is available in `--no-dev` mode, a `jean_beru_pipeline.processor.
-event_dispatcher_processor` will be available (see 
-[EventDispatcherProcessor](./src/Processor/EventDispatcherProcessor.php)) to dispatch some events :
-- JeanBeru\PipelineBundle\Event\BeforeProcessorEvent
-- JeanBeru\PipelineBundle\Event\BeforeStageEvent
-- JeanBeru\PipelineBundle\Event\AfterStageEvent
-- JeanBeru\PipelineBundle\Event\AfterProcessorEvent
 
 ## Inject pipeline services
 
@@ -77,9 +68,11 @@ With the previous configuration, we will be able to inject 3 pipelines :
 
 Each service implements the `League\Pipeline\PipelineInterface` interface.
 
-In this example, stages defined in `some_computations` pipeline make some operations on the payload and returns it.
+In this example, `some_computations` pipeline defined before will make some operations on the payload and will 
+return it.
 
 ```php
+<?php
 
 use League\Pipeline\PipelineInterface;
 
@@ -92,14 +85,39 @@ final class MyService
         $this->someComputationsPipeline = $someComputationsPipeline;
     }
     
-    public function __invoke(int $base): Response
+    public function __invoke(int $base)
     {
         // $base = 2
         $result = $this->someComputationsPipeline($base);
         // $result = (((2 + 1) + 3) * 4) = 24
+        
+        // ...
     }
 }
 ```
+
+## What are pipeline and stage ?
+
+A stage represents a task to execute with a payload. It must be a callable. You can implement
+`League\Pipeline\StageInterface` to ensure that your stage can be called.
+
+A pipeline represents chained stages. You can see it like a CLI command: `stage_1 | stage_2 | stage_3`. Each stage
+receives the previously returned payload.
+Since pipelines implements `League\Pipeline\PipelineInterface` which implements itself `League\Pipeline\StageInterface`,
+you can use it as a stage to make re-usable pipelines (a.k.a. pipeline-ception). Ex: `stage_1 | pipeline_1  | stage_3`.
+
+## What is a processor ?
+
+To execute a pipeline, a processor is used. It must implement `League\Pipeline\ProcessorInterface`. You can use your
+own service if you want to.
+
+If `symfony/event-dispatcher` is available in `--no-dev` mode, a `jean_beru_pipeline.processor.
+event_dispatcher_processor` will be available (see
+[EventDispatcherProcessor](./src/Processor/EventDispatcherProcessor.php)) to dispatch some events :
+- JeanBeru\PipelineBundle\Event\BeforeProcessorEvent
+- JeanBeru\PipelineBundle\Event\BeforeStageEvent
+- JeanBeru\PipelineBundle\Event\AfterStageEvent
+- JeanBeru\PipelineBundle\Event\AfterProcessorEvent
 
 ## Test
 
