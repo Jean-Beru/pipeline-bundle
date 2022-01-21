@@ -15,12 +15,36 @@ class ConfigurationTest extends TestCase
         $options = [
             'pipelines' => [
                 'pipeline_one' => [
-                    'service_one',
-                    'service_two',
+                    'processor' => 'My\Custom\Processor',
+                    'stages' => [
+                        'service_one',
+                        'service_two',
+                    ],
                 ],
                 'pipeline_two' => [
-                    'service_one',
-                    'service_three',
+                    'stages' => [
+                        'service_one',
+                        'service_three',
+                    ],
+                ],
+            ],
+        ];
+
+        $expected = [
+            'pipelines' => [
+                'pipeline_one' => [
+                    'processor' => 'My\Custom\Processor',
+                    'stages' => [
+                        'service_one',
+                        'service_two',
+                    ],
+                ],
+                'pipeline_two' => [
+                    'processor' => null,
+                    'stages' => [
+                        'service_one',
+                        'service_three',
+                    ],
                 ],
             ],
         ];
@@ -29,6 +53,6 @@ class ConfigurationTest extends TestCase
         $configuration = new Configuration();
         $config = $processor->processConfiguration($configuration, [$options]);
 
-        $this->assertEquals($options, $config);
+        $this->assertEquals($expected, $config);
     }
 }

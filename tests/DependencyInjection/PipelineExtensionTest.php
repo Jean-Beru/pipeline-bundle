@@ -12,44 +12,53 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class PipelineExtensionTest extends TestCase
 {
-    public function testLoad(): void
+    public function testLoadProcessor(): void
     {
-        $container = new ContainerBuilder();
-        $container->registerExtension(new PipelineExtension());
-        $container->loadFromExtension('pipeline', [
+        $container = $this->createContainer([
             'pipelines' => [
-                'update_stock' => [
-                    'retrieve',
-                    'update_stocks',
-                    'update_status',
-                    'persist',
-                ],
-                'import_users' => [
-                    'retrieve',
-                    'import',
-                    'persist',
+                'custom_pipeline' => [
+                    'processor' => 'custom_processor',
+                    'stages' => ['custom_stage_1', 'custom_stage_2'],
                 ],
             ],
         ]);
-        $this->compileContainer($container);
 
-        $this->assertDefinition($container, 'jean_beru_pipeline.pipeline.update_stock', PipelineInterface::class. ' $updateStockPipeline', [
-            'retrieve',
-            'update_stocks',
-            'update_status',
-            'persist',
+        $definitionProcessor = $container->getDefinition('jean_beru_pipeline.pipeline.custom_pipeline')->getArgument(1);
+
+        self::assertInstanceOf(Reference::class, $definitionProcessor);
+        self::assertSame('custom_processor', (string) $definitionProcessor);
+    }
+
+    public function testLoadStages(): void
+    {
+        $container = $this->createContainer([
+            'pipelines' => [
+                'pipeline_one' => [
+                    'stages' => ['stage_1.1', 'stage_1.2', 'stage_1.3', 'stage_1.4'],
+                ],
+                'pipeline_two' => [
+                    'stages' => ['stage_2.1', 'stage_2.2', 'stage_2.3'],
+                ],
+            ],
         ]);
-        $this->assertDefinition($container, 'jean_beru_pipeline.pipeline.import_users', PipelineInterface::class. ' $importUsersPipeline', [
-            'retrieve',
-            'import',
-            'persist',
+
+        $this->assertPipelineDefinition($container, 'jean_beru_pipeline.pipeline.pipeline_one', PipelineInterface::class. ' $pipelineOnePipeline', [
+            'stage_1.1',
+            'stage_1.2',
+            'stage_1.3',
+            'stage_1.4',
+        ]);
+        $this->assertPipelineDefinition($container, 'jean_beru_pipeline.pipeline.pipeline_two', PipelineInterface::class. ' $pipelineTwoPipeline', [
+            'stage_2.1',
+            'stage_2.2',
+            'stage_2.3',
         ]);
     }
 
     /**
      * @param array<string> $stages
      */
-    private function assertDefinition(ContainerBuilder $container, string $id, string $alias, array $stages): void
+    private function assertPipelineDefinition(ContainerBuilder $container, string $id, string $alias, array $stages): void
     {
         self::assertTrue($container->hasDefinition($id), "Definition \"$id\" not found.");
         self::assertTrue($container->hasAlias($alias), "Alias \"$alias\" not found.");
@@ -67,11 +76,20 @@ class PipelineExtensionTest extends TestCase
         self::assertSame(count($stages), $argumentCount);
     }
 
-    private function compileContainer(ContainerBuilder $container): void
+    /**
+     * @param array<mixed> $config
+     */
+    private function createContainer(array $config): ContainerBuilder
     {
+        $container = new ContainerBuilder();
+        $container->registerExtension(new PipelineExtension());
+        $container->loadFromExtension('pipeline', $config);
+
         $container->getCompilerPassConfig()->setOptimizationPasses([]);
         $container->getCompilerPassConfig()->setRemovingPasses([]);
         $container->getCompilerPassConfig()->setAfterRemovingPasses([]);
         $container->compile();
+
+        return $container;
     }
 }
