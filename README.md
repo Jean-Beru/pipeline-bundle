@@ -12,17 +12,44 @@
 pipeline:
   pipelines:
     update_stock:
-      - 'App\Stages\RetrieveProduct'
-      - 'App\Stages\UpdateStockProduct'
-      - 'App\Stages\PersistProduct'
+      processor: 'jean_beru_pipeline.processor.event_dispatcher_processor'
+      stages:
+        - 'App\Stages\RetrieveProduct'
+        - 'App\Stages\UpdateStockProduct'
+        - 'App\Stages\PersistProduct'
     export:
-      - 'App\Stages\RetrieveProduct'
-      - 'App\Stages\ExportProduct'
+      stages:
+        - 'App\Stages\RetrieveProduct'
+        - 'App\Stages\ExportProduct'
     some_computations:
-      - 'App\Stages\AddOne'
-      - 'App\Stages\AddThree'
-      - 'App\Stages\MultiplyByFour'
+      stages:
+        - 'App\Stages\AddOne'
+        - 'App\Stages\AddThree'
+        - 'App\Stages\MultiplyByFour'
 ```
+
+## What are pipeline and stage ?
+
+A stage represents a task to execute with a payload. It must be a callable. You can implement 
+`League\Pipeline\StageInterface` to ensure that your stage can be called.
+
+A pipeline represents chained stages. You can see it like a CLI command: `stage_1 | stage_2 | stage_3`. Each stage 
+receives the previously returned payload.
+Since pipelines implements `League\Pipeline\PipelineInterface` which implements itself `League\Pipeline\StageInterface`,
+you can use it as a stage to make re-usable pipelines (a.k.a. pipeline-ception). Ex: `stage_1 | pipeline_1  | stage_3`.
+
+## What is a processor ?
+
+To execute a pipeline, a processor is used. It must implement `League\Pipeline\ProcessorInterface`. You can use your 
+own service if you want to.
+
+If `symfony/event-dispatcher` is available in `--no-dev` mode, a `jean_beru_pipeline.processor.
+event_dispatcher_processor` will be available (see 
+[EventDispatcherProcessor](./src/Processor/EventDispatcherProcessor.php)) to dispatch some events :
+- JeanBeru\PipelineBundle\Event\BeforeProcessorEvent
+- JeanBeru\PipelineBundle\Event\BeforeStageEvent
+- JeanBeru\PipelineBundle\Event\AfterStageEvent
+- JeanBeru\PipelineBundle\Event\AfterProcessorEvent
 
 ## Inject pipeline services
 
@@ -70,4 +97,18 @@ final class MyService
         // $result = (((2 + 1) + 3) * 4) = 24
     }
 }
+```
+
+## Test
+
+Install dependencies :
+```php
+composer install
+```
+
+Run tests :
+```php
+vendor/bin/simple-phpunit
+vendor/bin/php-cs-fixer fix --dry-run
+vendor/bin/phpstan
 ```
