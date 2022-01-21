@@ -11,7 +11,7 @@ use JeanBeru\PipelineBundle\Event\BeforeStageEvent;
 use League\Pipeline\ProcessorInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
-class EventDispatcherProcessor implements ProcessorInterface
+final class EventDispatcherProcessor implements ProcessorInterface
 {
     private EventDispatcherInterface $eventDispatcher;
 
