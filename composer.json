@@ -3,6 +3,7 @@
     "description": "Pipeline bundle for Symfony",
     "type": "symfony-bundle",
     "license": "MIT",
+    "minimum-stability": "stable",
     "authors": [
         {
             "name": "Jean-Beru",
