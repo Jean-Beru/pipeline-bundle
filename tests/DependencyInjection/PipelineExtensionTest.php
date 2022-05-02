@@ -23,7 +23,7 @@ class PipelineExtensionTest extends TestCase
             ],
         ]);
 
-        $definitionProcessor = $container->getDefinition('jean_beru_pipeline.pipeline.custom_pipeline')->getArgument(1);
+        $definitionProcessor = $container->getDefinition('jeanberu_pipeline.pipeline.custom_pipeline')->getArgument(1);
 
         self::assertInstanceOf(Reference::class, $definitionProcessor);
         self::assertSame('custom_processor', (string) $definitionProcessor);
@@ -42,13 +42,13 @@ class PipelineExtensionTest extends TestCase
             ],
         ]);
 
-        $this->assertPipelineDefinition($container, 'jean_beru_pipeline.pipeline.pipeline_one', PipelineInterface::class. ' $pipelineOnePipeline', [
+        $this->assertPipelineDefinition($container, 'jeanberu_pipeline.pipeline.pipeline_one', PipelineInterface::class. ' $pipelineOnePipeline', [
             'stage_1.1',
             'stage_1.2',
             'stage_1.3',
             'stage_1.4',
         ]);
-        $this->assertPipelineDefinition($container, 'jean_beru_pipeline.pipeline.pipeline_two', PipelineInterface::class. ' $pipelineTwoPipeline', [
+        $this->assertPipelineDefinition($container, 'jeanberu_pipeline.pipeline.pipeline_two', PipelineInterface::class. ' $pipelineTwoPipeline', [
             'stage_2.1',
             'stage_2.2',
             'stage_2.3',
@@ -83,7 +83,7 @@ class PipelineExtensionTest extends TestCase
     {
         $container = new ContainerBuilder();
         $container->registerExtension(new PipelineExtension());
-        $container->loadFromExtension('pipeline', $config);
+        $container->loadFromExtension('jeanberu_pipeline', $config);
 
         $container->getCompilerPassConfig()->setOptimizationPasses([]);
         $container->getCompilerPassConfig()->setRemovingPasses([]);

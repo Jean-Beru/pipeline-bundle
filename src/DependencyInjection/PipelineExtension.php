@@ -28,7 +28,7 @@ final class PipelineExtension extends Extension
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
 
-        $pipelineFactory = new Reference('jean_beru_pipeline.pipeline_factory');
+        $pipelineFactory = new Reference('jeanberu_pipeline.pipeline_factory');
         foreach ($config['pipelines'] ?? [] as $name => $pipelineConfiguration) {
             $this->registerPipeline($container, $pipelineFactory, $name, $pipelineConfiguration);
         }
@@ -48,9 +48,14 @@ final class PipelineExtension extends Extension
             $definition->addArgument(new Reference($processor));
         }
 
-        $serviceId = "jean_beru_pipeline.pipeline.${name}";
+        $serviceId = "jeanberu_pipeline.pipeline.${name}";
         $container->setDefinition($serviceId, $definition);
         $container->setAlias(PipelineInterface::class, $serviceId);
         $container->registerAliasForArgument($serviceId, PipelineInterface::class, "${name}Pipeline");
+    }
+
+    public function getAlias(): string
+    {
+        return 'jeanberu_pipeline';
     }
 }
