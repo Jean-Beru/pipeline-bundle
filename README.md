@@ -1,7 +1,5 @@
 # PipelineBundle
 
-**EXPERIMENTAL** This bundle is currently experimental and is likely to change, or even change drastically.
-
 [Pipeline](https://github.com/thephpleague/pipeline) bundle for Symfony.
 
 ## Install
