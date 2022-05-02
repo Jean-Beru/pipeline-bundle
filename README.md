@@ -24,6 +24,14 @@ return [
 
 ## Configuration
 
+`pipelines` defines all pipelines. The key defines pipeline's name.
+
+`pipelines.__NAME__.stages` defines services to use as stages in this pipeline.
+
+`pipelines.__NAME__.processor` (optional) defines a specific processor to use with this pipeline. See "What is a
+processor ?" section below.
+
+Example :
 ```yaml
 pipeline:
   pipelines:
@@ -111,9 +119,9 @@ you can use it as a stage to make re-usable pipelines (a.k.a. pipeline-ception).
 To execute a pipeline, a processor is used. It must implement `League\Pipeline\ProcessorInterface`. You can use your
 own service if you want to.
 
-If `symfony/event-dispatcher` is available in `--no-dev` mode, a `jean_beru_pipeline.processor.
-event_dispatcher_processor` will be available (see
-[EventDispatcherProcessor](./src/Processor/EventDispatcherProcessor.php)) to dispatch some events :
+If `symfony/event-dispatcher` is available, a `jean_beru_pipeline.processor.event_dispatcher_processor` processor 
+will be available (see [EventDispatcherProcessor](./src/Processor/EventDispatcherProcessor.php)) to dispatch some 
+events :
 - JeanBeru\PipelineBundle\Event\BeforeProcessorEvent
 - JeanBeru\PipelineBundle\Event\BeforeStageEvent
 - JeanBeru\PipelineBundle\Event\AfterStageEvent
