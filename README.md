@@ -11,6 +11,7 @@ composer require jean-beru/pipeline-bundle
 
 If you do not use [symfony/flex](https://github.com/symfony/flex), you have to add this bundle to your
 `config/bundles.php` file :
+
 ```php
 <?php
 
@@ -31,10 +32,10 @@ processor ?" section below.
 
 Example :
 ```yaml
-pipeline:
+jeanberu_pipeline:
   pipelines:
     update_stock:
-      processor: 'jean_beru_pipeline.processor.event_dispatcher_processor'
+      processor: 'jeanberu_pipeline.processor.event_dispatcher_processor'
       stages:
         - 'App\Stages\RetrieveProduct'
         - 'App\Stages\UpdateStockProduct'
@@ -54,12 +55,12 @@ pipeline:
 
 ### Using service ID
 
-All defined pipeline is added as a service named `jean_beru_pipeline.pipeline.__NAME__`.
+All defined pipeline is added as a service named `jeanberu_pipeline.pipeline.__NAME__`.
 
 With the previous configuration, we will be able to inject 3 pipelines :
-- jean_beru_pipeline.pipeline.update_stock
-- jean_beru_pipeline.pipeline.export
-- jean_beru_pipeline.pipeline.some_computations
+- jeanberu_pipeline.pipeline.update_stock
+- jeanberu_pipeline.pipeline.export
+- jeanberu_pipeline.pipeline.some_computations
 
 ### Using autowiring
 
@@ -74,8 +75,8 @@ With the previous configuration, we will be able to inject 3 pipelines :
 
 Each service implements the `League\Pipeline\PipelineInterface` interface.
 
-In this example, `some_computations` pipeline defined before will make some operations on the payload and will 
-return it.
+In this example, `some_computations` pipeline defined before will make some operations on the payload and will return
+it.
 
 ```php
 <?php
@@ -117,7 +118,7 @@ you can use it as a stage to make re-usable pipelines (a.k.a. pipeline-ception).
 To execute a pipeline, a processor is used. It must implement `League\Pipeline\ProcessorInterface`. You can use your
 own service if you want to.
 
-If `symfony/event-dispatcher` is available, a `jean_beru_pipeline.processor.event_dispatcher_processor` processor 
+If `symfony/event-dispatcher` is available, a `jeanberu_pipeline.processor.event_dispatcher_processor` processor 
 will be available (see [EventDispatcherProcessor](./src/Processor/EventDispatcherProcessor.php)) to dispatch some 
 events :
 - JeanBeru\PipelineBundle\Event\BeforeProcessorEvent

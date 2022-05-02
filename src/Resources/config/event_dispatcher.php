@@ -8,7 +8,7 @@ use JeanBeru\PipelineBundle\Processor\EventDispatcherProcessor;
 
 return static function (ContainerConfigurator $container): void {
     $container->services()
-        ->set('jean_beru_pipeline.processor.event_dispatcher_processor', EventDispatcherProcessor::class)
+        ->set('jeanberu_pipeline.processor.event_dispatcher_processor', EventDispatcherProcessor::class)
             ->args([
                 service('event_dispatcher')
             ])

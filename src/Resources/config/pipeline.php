@@ -8,6 +8,6 @@ use JeanBeru\PipelineBundle\Factory\PipelineFactory;
 
 return static function (ContainerConfigurator $container): void {
     $container->services()
-        ->set('jean_beru_pipeline.pipeline_factory', PipelineFactory::class)
+        ->set('jeanberu_pipeline.pipeline_factory', PipelineFactory::class)
     ;
 };
