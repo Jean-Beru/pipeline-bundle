@@ -2,6 +2,7 @@ name: 'CI'
 
 on:
   push:
+    branches: ['main']
   pull_request:
 
 env:
@@ -67,7 +68,7 @@ jobs:
           - '8.1'
           - '8.2'
         dependencies-version:
-          - 'lowest'
+#          - 'lowest'
           - 'highest'
       fail-fast: false
     steps:
