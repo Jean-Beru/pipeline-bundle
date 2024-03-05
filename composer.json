@@ -7,7 +7,7 @@
     "authors": [
         {
             "name": "Jean-Beru",
-            "email": "hubert.lenoir@sensiolabs.com"
+            "email": "Jean-Beru@users.noreply.github.com"
         }
     ],
     "autoload": {
@@ -23,12 +23,12 @@
     "require": {
         "php": "^7.4|^8.0",
         "league/pipeline": "^1.0",
-        "symfony/config": "^5.0|^6.0",
-        "symfony/dependency-injection": "^5.0|^6.0",
-        "symfony/http-kernel": "^5.0|^6.0"
+        "symfony/config": "^5.0|^6.0|^7.0",
+        "symfony/dependency-injection": "^5.0|^6.0|^7.0",
+        "symfony/http-kernel": "^5.0|^6.0|^7.0"
     },
     "require-dev": {
-        "symfony/phpunit-bridge": "^6.0",
+        "symfony/phpunit-bridge": "^5.0|6.0|^7.0",
         "phpstan/phpstan": "^1.3",
         "phpstan/phpstan-phpunit": "^1.0",
         "phpstan/phpstan-symfony": "^1.0",
@@ -37,5 +37,10 @@
     },
     "suggest": {
         "symfony/event-dispatcher": "Allows event subscription on the stage execution"
+    },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        }
     }
 }

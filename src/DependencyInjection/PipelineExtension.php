@@ -48,10 +48,11 @@ final class PipelineExtension extends Extension
             $definition->addArgument(new Reference($processor));
         }
 
-        $serviceId = "jeanberu_pipeline.pipeline.${name}";
+        $serviceId = sprintf('jeanberu_pipeline.pipeline.%s', $name);
+        ;
         $container->setDefinition($serviceId, $definition);
         $container->setAlias(PipelineInterface::class, $serviceId);
-        $container->registerAliasForArgument($serviceId, PipelineInterface::class, "${name}Pipeline");
+        $container->registerAliasForArgument($serviceId, PipelineInterface::class, sprintf("%sPipeline", $name));
     }
 
     public function getAlias(): string

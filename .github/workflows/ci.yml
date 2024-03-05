@@ -1,109 +1,90 @@
-name: CI
+name: 'CI'
 
 on:
   push:
+    branches: ['main']
   pull_request:
 
 env:
-  COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  COMPOSER_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
 
 jobs:
   php-cs-fixer:
-    name: PHP-cs-fixer (PHP ${{ matrix.php }})
-    runs-on: ubuntu-latest
+    name: 'PHP-CS-Fixer'
+    runs-on: 'ubuntu-latest'
     strategy:
-      matrix:
-        php:
-          - '8.1'
       fail-fast: false
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - name: 'Checkout'
+        uses: 'actions/checkout@v2'
+      - name: 'Setup PHP'
+        uses: 'shivammathur/setup-php@v2'
         with:
-          php-version: ${{ matrix.php }}
-          ini-values: memory_limit=-1
-          tools: php-cs-fixer
-          coverage: none
-      - name: Run PHP-CS-Fixer analysis
-        run: php-cs-fixer fix --dry-run --diff --ansi
+          php-version: '8.1'
+          ini-values: 'memory_limit=-1'
+          tools: 'php-cs-fixer'
+          coverage: 'none'
+      - name: 'Run PHP-CS-Fixer analysis'
+        run: 'php-cs-fixer fix --dry-run --diff --ansi'
 
   phpstan:
-    name: PHPStan (PHP ${{ matrix.php }})
-    runs-on: ubuntu-latest
+    name: 'PHPStan'
+    runs-on: 'ubuntu-latest'
     strategy:
-      matrix:
-        php:
-          - '8.1'
       fail-fast: false
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - name: 'Checkout'
+        uses: 'actions/checkout@v2'
+      - name: 'Setup PHP'
+        uses: 'shivammathur/setup-php@v2'
         with:
-          php-version: ${{ matrix.php }}
-          tools: composer
-          coverage: none
-          ini-values: memory_limit=-1
-      - name: Get composer cache directory
-        id: composer_cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - name: Install project dependencies
-        run: composer install --dev --no-interaction --no-progress --ansi
-      - name: Cache dependencies
-        uses: actions/cache@v2
+          php-version: '8.2'
+          tools: 'composer'
+          coverage: 'none'
+          ini-values: 'memory_limit=-1'
+      - uses: 'ramsey/composer-install@v3'
+      - name: 'Cache PHPStan results'
+        uses: 'actions/cache@v2'
         with:
-          path: ${{ steps.composer_cache.outputs.dir }}
-          key: composer-${{ hashFiles('**/composer.json') }}
-          restore-keys: composer-
-      - name: Cache PHPStan results
-        uses: actions/cache@v2
-        with:
-          path: /tmp/phpstan
-          key: phpstan-php${{ matrix.php }}-${{ github.sha }}
+          path: '/tmp/phpstan'
+          key: 'phpstan-php${{ matrix.php }}-${{ github.sha }}'
           restore-keys: |
             phpstan-php${{ matrix.php }}-
             phpstan-
         continue-on-error: true
-      - name: Install PHPUnit
-        run: vendor/bin/simple-phpunit --version
-      - name: Run PHPStan analysis
-        run: ./vendor/bin/phpstan analyse --no-interaction --no-progress --ansi
+      - name: 'Install PHPUnit'
+        run: 'vendor/bin/simple-phpunit --version'
+      - name: 'Run PHPStan analysis'
+        run: './vendor/bin/phpstan analyse --no-interaction --no-progress --ansi'
 
   phpunit:
-    name: PHPUnit (PHP ${{ matrix.php }})
-    runs-on: ubuntu-latest
+    name: 'PHPUnit'
+    runs-on: 'ubuntu-latest'
     strategy:
       matrix:
         php:
           - '7.4'
           - '8.0'
           - '8.1'
+          - '8.2'
+        dependencies-version:
+#          - 'lowest'
+          - 'highest'
       fail-fast: false
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - name: 'Checkout'
+        uses: 'actions/checkout@v2'
+      - name: 'Setup PHP'
+        uses: 'shivammathur/setup-php@v2'
         with:
-          php-version: ${{ matrix.php }}
-          tools: composer
-          coverage: none
-          ini-values: memory_limit=-1
-      - name: Get composer cache directory
-        id: composer_cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - name: Install project dependencies
-        run: composer install --dev --no-interaction --no-progress --ansi
-      - name: Cache dependencies
-        uses: actions/cache@v2
+          php-version: '${{ matrix.php }}'
+          tools: 'composer'
+          coverage: 'none'
+          ini-values: 'memory_limit=-1'
+      - uses: 'ramsey/composer-install@v3'
         with:
-          path: ${{ steps.composer_cache.outputs.dir }}
-          key: composer-${{ hashFiles('**/composer.json') }}
-          restore-keys: composer-
-      - name: Install PHPUnit
-        run: vendor/bin/simple-phpunit --version
-      - name: Run PHPUnit tests
-        run: vendor/bin/simple-phpunit
+          dependency-versions: '${{ matrix.dependencies-version }}'
+      - name: 'Install PHPUnit'
+        run: 'vendor/bin/simple-phpunit --version'
+      - name: 'Run PHPUnit tests'
+        run: 'vendor/bin/simple-phpunit'
