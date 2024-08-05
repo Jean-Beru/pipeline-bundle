@@ -7,40 +7,26 @@ namespace JeanBeru\PipelineBundle\Tests\DependencyInjection;
 use JeanBeru\PipelineBundle\DependencyInjection\PipelineExtension;
 use League\Pipeline\PipelineInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 
 class PipelineExtensionTest extends TestCase
 {
-    public function testLoadProcessor(): void
+    public function testItLoadsProcessor(): void
     {
-        $container = $this->createContainer([
-            'pipelines' => [
-                'custom_pipeline' => [
-                    'processor' => 'custom_processor',
-                    'stages' => ['custom_stage_1', 'custom_stage_2'],
-                ],
-            ],
-        ]);
+        $container = $this->createContainerFromFile('processor');
 
         $definitionProcessor = $container->getDefinition('jeanberu_pipeline.pipeline.custom_pipeline')->getArgument(1);
 
-        self::assertInstanceOf(Reference::class, $definitionProcessor);
-        self::assertSame('custom_processor', (string) $definitionProcessor);
+        $this->assertInstanceOf(Reference::class, $definitionProcessor);
+        $this->assertSame('custom_processor', (string) $definitionProcessor);
     }
 
-    public function testLoadStages(): void
+    public function testItLoadsMultiplePipelines(): void
     {
-        $container = $this->createContainer([
-            'pipelines' => [
-                'pipeline_one' => [
-                    'stages' => ['stage_1.1', 'stage_1.2', 'stage_1.3', 'stage_1.4'],
-                ],
-                'pipeline_two' => [
-                    'stages' => ['stage_2.1', 'stage_2.2', 'stage_2.3'],
-                ],
-            ],
-        ]);
+        $container = $this->createContainerFromFile('multiple');
 
         $this->assertPipelineDefinition($container, 'jeanberu_pipeline.pipeline.pipeline_one', PipelineInterface::class. ' $pipelineOnePipeline', [
             'stage_1.1',
@@ -60,30 +46,30 @@ class PipelineExtensionTest extends TestCase
      */
     private function assertPipelineDefinition(ContainerBuilder $container, string $id, string $alias, array $stages): void
     {
-        self::assertTrue($container->hasDefinition($id), "Definition \"$id\" not found.");
-        self::assertTrue($container->hasAlias($alias), "Alias \"$alias\" not found.");
-        self::assertSame($id, (string) $container->getAlias($alias));
+        $this->assertTrue($container->hasDefinition($id), "Definition \"$id\" not found.");
+        $this->assertTrue($container->hasAlias($alias), "Alias \"$alias\" not found.");
+        $this->assertSame($id, (string) $container->getAlias($alias));
 
         $definitionStages = $container->getDefinition($id)->getArgument(0);
-        self::assertIsIterable($definitionStages);
+        $this->assertIsIterable($definitionStages);
 
         $argumentCount = 0;
         foreach ($definitionStages as $definitionStage) {
-            self::assertInstanceOf(Reference::class, $definitionStage);
-            self::assertSame($stages[$argumentCount], (string) $definitionStage);
+            $this->assertInstanceOf(Reference::class, $definitionStage);
+            $this->assertSame($stages[$argumentCount], (string) $definitionStage);
             ++$argumentCount;
         }
-        self::assertSame(count($stages), $argumentCount);
+        $this->assertSame(count($stages), $argumentCount);
     }
 
-    /**
-     * @param array<mixed> $config
-     */
-    private function createContainer(array $config): ContainerBuilder
+    private function createContainerFromFile(string $file): ContainerBuilder
     {
+
         $container = new ContainerBuilder();
         $container->registerExtension(new PipelineExtension());
-        $container->loadFromExtension('jeanberu_pipeline', $config);
+
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/Fixtures/configuration'));
+        $loader->load($file.'.yaml');
 
         $container->getCompilerPassConfig()->setOptimizationPasses([]);
         $container->getCompilerPassConfig()->setRemovingPasses([]);

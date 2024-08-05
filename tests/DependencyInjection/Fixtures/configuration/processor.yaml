@@ -1,0 +1,7 @@
+jeanberu_pipeline:
+    pipelines:
+        custom_pipeline:
+            processor: 'custom_processor'
+            stages:
+                - 'stage_1.1'
+                - 'stage_1.2'
