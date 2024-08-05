@@ -1,5 +1,12 @@
 # PipelineBundle
 
+[![Latest Version](https://img.shields.io/github/release/Jean-Beru/pipeline-bundle.svg?style=flat-square)](https://github.com/Jean-Beru/pipeline-bundle/releases)
+[![Total Downloads](https://poser.pugx.org/Jean-Beru/pipeline-bundle/downloads)](https://packagist.org/packages/Jean-Beru/pipeline-bundle)
+[![Monthly Downloads](https://poser.pugx.org/Jean-Beru/pipeline-bundle/d/monthly.png)](https://packagist.org/packages/Jean-Beru/pipeline-bundle)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENCE)
+[![Static analysis](https://github.com/Jean-Beru/pipeline-bundle/actions/workflows/static.yml/badge.svg?branch=main)](https://github.com/Jean-Beru/pipeline-bundle/actions/workflows/static.yml?query=branch%3Amain)
+[![Tests](https://github.com/Jean-Beru/pipeline-bundle/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/Jean-Beru/pipeline-bundle/actions/workflows/tests.yml?query=branch%3Amain)
+
 [Pipeline](https://github.com/thephpleague/pipeline) bundle for Symfony.
 
 ## Install
